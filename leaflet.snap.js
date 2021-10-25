@@ -1021,11 +1021,19 @@ L.Snap.Gridlines =  L.Class.extend({
         this.pixelOffsetX = projectedOffset.x + pixelOffsetX;
         this.pixelOffsetY = projectedOffset.y + pixelOffsetY;
         
-        var nwCorner = map.project([this.gridGuideWest, this.gridGuideNorth], zoom);
-        var seCorner = map.project([this.gridGuideEast, this.gridGuideSouth], zoom);
         
-        var pixelDrawWidth = nwCorner.x - seCorner.x;
-        var pixelDrawHeight = nwCorner.y - seCorner.y;
+
+        
+        //var nwCorner = pixelBounds.getTopLeft();
+        //var seCorner = pixelBounds.getBottomRight();
+        //var nwCorner = map.project([this.gridGuideWest, this.gridGuideNorth], zoom);
+        //var seCorner = map.project([this.gridGuideEast, this.gridGuideSouth], zoom);
+        
+        //var pixelDrawWidth = nwCorner.x - seCorner.x;
+        //var pixelDrawHeight = nwCorner.y - seCorner.y;
+        var pixelBounds = map.getPixelBounds();
+        var pixelDrawWidth = pixelBounds.getSize().x;
+        var pixelDrawHeight = pixelBounds.getSize().y;
         
         if (usesNum) {
             if (options.numGridlines) {
