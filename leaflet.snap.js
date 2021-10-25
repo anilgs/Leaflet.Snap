@@ -894,6 +894,7 @@ L.Snap.Gridlines =  L.Class.extend({
     
     addHooks: function () {
         if (this._map) {
+            var map = this._map;
             this.gridlinesNS = L.layerGroup().addTo(map);
             this.gridlinesNS._gridlineGroup = 'NS';
             this.gridlinesNS._gridlineOwner = this._leaflet_id;
@@ -945,6 +946,7 @@ L.Snap.Gridlines =  L.Class.extend({
     },
     
     calcDimensions: function(options) {
+        var map = this._map;
         var defaultOptions = this.defaultOptions;
         
         // lmfao, this is completely absurd but I'm so tired of hunting down bugs that turn
