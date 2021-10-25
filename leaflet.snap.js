@@ -1007,7 +1007,7 @@ L.Snap.Gridlines =  L.Class.extend({
         this.gridGuideEast = this.maxBounds.getEast();
         this.gridGuideNorth = this.maxBounds.getNorth();
         this.gridGuideSouth = this.maxBounds.getSouth();
-        var maxZoom = map.getMaxZoom();
+        var zoom = map.getZoom();
         
         ///////////////////////////
         // offset
@@ -1017,12 +1017,12 @@ L.Snap.Gridlines =  L.Class.extend({
         var pixelOffsetX = options.pixelOffsetX || 0;
         var pixelOffsetY = options.pixelOffsetY || 0;
         
-        var projectedOffset = map.project([lngOffset, latOffset], maxZoom);
+        var projectedOffset = map.project([lngOffset, latOffset], zoom);
         this.pixelOffsetX = projectedOffset.x + pixelOffsetX;
         this.pixelOffsetY = projectedOffset.y + pixelOffsetY;
         
-        var nwCorner = map.project([this.gridGuideWest, this.gridGuideNorth], maxZoom);
-        var seCorner = map.project([this.gridGuideEast, this.gridGuideSouth], maxZoom);
+        var nwCorner = map.project([this.gridGuideWest, this.gridGuideNorth], zoom);
+        var seCorner = map.project([this.gridGuideEast, this.gridGuideSouth], zoom);
         
         var pixelDrawWidth = nwCorner.x - seCorner.x;
         var pixelDrawHeight = nwCorner.y - seCorner.y;
@@ -1043,7 +1043,7 @@ L.Snap.Gridlines =  L.Class.extend({
         
         else if (usesSpacing) {
             if (usesLatLngSpacing) {
-                var projectedSpacing = map.project([options.gridSpacingLat, options.gridSpacingLng], maxZoom);
+                var projectedSpacing = map.project([options.gridSpacingLat, options.gridSpacingLng], zoom);
                 
                 this.pixelSpacingX = Math.abs(projectedSpacing.x);
                 this.pixelSpacingY = Math.abs(projectedSpacing.y);
