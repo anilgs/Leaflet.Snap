@@ -1025,7 +1025,7 @@ L.Snap.Gridlines =  L.Class.extend({
         var seCorner = map.project([this.gridGuideEast, this.gridGuideSouth], maxZoom);
         
         var pixelDrawWidth = nwCorner.x - seCorner.x;
-        var pixelDrawHeight = nwCorner.x - seCorner.y;
+        var pixelDrawHeight = nwCorner.y - seCorner.y;
         
         if (usesNum) {
             if (options.numGridlines) {
