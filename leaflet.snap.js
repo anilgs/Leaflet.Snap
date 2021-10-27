@@ -1092,7 +1092,7 @@ L.Snap.Gridlines =  L.Class.extend({
         }
         
         for (var i=0; i<this.numGridlinesLat; i++) {
-            var ll = map.unproject([0, -i*this.pixelSpacingX + this.pixelOffsetX], map.getMaxZoom());
+            var ll = map.layerPointToLatLng(L.point(0, -i*this.pixelSpacingX + this.pixelOffsetX));
             
             var gridlineNS = new L.Polyline([[this.gridGuideNorth, ll.lat], [this.gridGuideSouth, ll.lat]], this.gridStyle);
             gridlineNS._gridlineGroup = 'NS';
@@ -1100,7 +1100,7 @@ L.Snap.Gridlines =  L.Class.extend({
         }
         
         for (var i=0; i<this.numGridlinesLng; i++) {
-            var ll = map.unproject([-i*this.pixelSpacingY + this.pixelOffsetY, 0], map.getMaxZoom());
+            var ll = map.layerPointToLatLng(L.point(-i*this.pixelSpacingY + this.pixelOffsetY, 0));
             
             var gridlineWE = new L.Polyline([[ll.lng, this.gridGuideWest], [ll.lng, this.gridGuideEast]], this.gridStyle);
             gridlineWE._gridlineGroup = 'WE';
