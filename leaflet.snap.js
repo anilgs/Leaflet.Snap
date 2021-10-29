@@ -1019,7 +1019,7 @@ L.Snap.Gridlines =  L.Class.extend({
         var pixelOffsetX = options.pixelOffsetX || 0;
         var pixelOffsetY = options.pixelOffsetY || 0;
         
-        var projectedOffset = map.project([lngOffset, latOffset], zoom);
+        var projectedOffset = map.latLngToLayerPoint(L.latLng(lngOffset, latOffset));
         this.pixelOffsetX = projectedOffset.x + pixelOffsetX;
         this.pixelOffsetY = projectedOffset.y + pixelOffsetY;
         
@@ -1053,7 +1053,7 @@ L.Snap.Gridlines =  L.Class.extend({
         
         else if (usesSpacing) {
             if (usesLatLngSpacing) {
-                var projectedSpacing = map.project([options.gridSpacingLat, options.gridSpacingLng], zoom);
+                var projectedSpacing = map.latLngToLayerPoint(L.latLng(options.gridSpacingLat, options.gridSpacingLng));
                 
                 this.pixelSpacingX = Math.abs(projectedSpacing.x);
                 this.pixelSpacingY = Math.abs(projectedSpacing.y);
