@@ -1123,12 +1123,10 @@ L.Snap.Gridlines =  L.Class.extend({
     },
     
     show : function () {
-        if (this._shown) {
-            return;
+        if(!this._map.hasLayer(this.gridlinesNS) || !this._map.hasLayer(this.gridlinesWE)) {
+            this._map.addLayer(this.gridlinesNS);
+            this._map.addLayer(this.gridlinesWE);
         }
-    
-        this._map.addLayer(this.gridlinesNS);
-        this._map.addLayer(this.gridlinesWE);
         if (this._snapEnabled) {
             this.enableSnap();
         }
