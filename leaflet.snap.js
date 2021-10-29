@@ -1021,8 +1021,8 @@ L.Snap.Gridlines =  L.Class.extend({
         
         if(options.latOffset && options.lngOffset) {
             var projectedOffset = map.latLngToLayerPoint(L.latLng(lngOffset, latOffset));
-            this.pixelOffsetX = projectedOffset.x + pixelOffsetX;
-            this.pixelOffsetY = projectedOffset.y + pixelOffsetY;
+            pixelOffsetX = projectedOffset.x + pixelOffsetX;
+            pixelOffsetY = projectedOffset.y + pixelOffsetY;
         }
         
         
