@@ -911,9 +911,10 @@ L.Snap.Gridlines =  L.Class.extend({
     },
     
     removeGrid: function() {
-        this._map.removeLayer(this.gridlinesNS);
-        this._map.removeLayer(this.gridlinesWE);
-        this._map._numGridEnabled --;
+        var lg = this._topLayer != null ? this._topLayer : this._map;
+        lg.removeLayer(this.gridlinesNS);
+        lg.removeLayer(this.gridlinesWE);
+        lg._numGridEnabled --;
     },
     
     enableSnap: function () {
@@ -1124,9 +1125,11 @@ L.Snap.Gridlines =  L.Class.extend({
     },
     
     show : function () {
-        if(!this._map.hasLayer(this.gridlinesNS) || !this._map.hasLayer(this.gridlinesWE)) {
-            this._map.addLayer(this.gridlinesNS);
-            this._map.addLayer(this.gridlinesWE);
+        //If top layer group is provided use that, else use the map
+        var lg = this._topLayer != null ? this._topLayer : this._map;
+        if(!lg.hasLayer(this.gridlinesNS) || !lg.hasLayer(this.gridlinesWE)) {
+            lg.addLayer(this.gridlinesNS);
+            lg.addLayer(this.gridlinesWE);
         }
         if (this._snapEnabled) {
             this.enableSnap();
