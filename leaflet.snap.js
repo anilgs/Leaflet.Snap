@@ -1098,7 +1098,7 @@ L.Snap.Gridlines =  L.Class.extend({
         for (var i=0; i<this.numGridlinesLat; i++) {
             var ll = map.layerPointToLatLng(L.point(0, -i*this.pixelSpacingX + this.pixelOffsetX));
             
-            var gridlineNS = new L.Polyline([[this.gridGuideNorth, ll.lat], [this.gridGuideSouth, ll.lat]], this.gridStyle);
+            var gridlineNS = new L.Polyline([[this.gridGuideNorth, ll.lng], [this.gridGuideSouth, ll.lng]], this.gridStyle);
             gridlineNS._gridlineGroup = 'NS';
             this.gridlinesNS.addLayer(gridlineNS);
         }
@@ -1106,7 +1106,7 @@ L.Snap.Gridlines =  L.Class.extend({
         for (var i=0; i<this.numGridlinesLng; i++) {
             var ll = map.layerPointToLatLng(L.point(-i*this.pixelSpacingY + this.pixelOffsetY, 0));
             
-            var gridlineWE = new L.Polyline([[ll.lng, this.gridGuideWest], [ll.lng, this.gridGuideEast]], this.gridStyle);
+            var gridlineWE = new L.Polyline([[ll.lat, this.gridGuideWest], [ll.lat, this.gridGuideEast]], this.gridStyle);
             gridlineWE._gridlineGroup = 'WE';
             this.gridlinesWE.addLayer(gridlineWE);
         }
