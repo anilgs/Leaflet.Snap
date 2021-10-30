@@ -1207,8 +1207,8 @@ L.Snap.Gridlines =  L.Class.extend({
                 this.pixelSpacingY = options.pixelSpacingY;
             }
             
-            this.numGridlinesLng = Math.floor(pixelDrawWidth/this.pixelSpacingX);
-            this.numGridlinesLat = Math.floor(pixelDrawHeight/this.pixelSpacingY);
+            this.numGridlinesLng = Math.floor(pixelDrawWidth/this.pixelSpacingX)+1;
+            this.numGridlinesLat = Math.floor(pixelDrawHeight/this.pixelSpacingY)+1;
         }
         
         this.gridStyle = {}
