@@ -1113,8 +1113,8 @@ L.Snap.Gridlines =  L.Class.extend({
                 this.numGridlinesLng = options.numGridlinesLng;
             }
             
-            this.pixelSpacingX = Math.floor(pixelDrawWidth/this.numGridlinesLat);
-            this.pixelSpacingY = Math.floor(pixelDrawHeight/this.numGridlinesLng);
+            this.pixelSpacingX = Math.floor(pixelDrawWidth/this.numGridlinesLng);
+            this.pixelSpacingY = Math.floor(pixelDrawHeight/this.numGridlinesLat);
         }
         
         else if (usesSpacing) {
@@ -1129,8 +1129,8 @@ L.Snap.Gridlines =  L.Class.extend({
                 this.pixelSpacingY = options.pixelSpacingY;
             }
             
-            this.numGridlinesLat = Math.floor(pixelDrawWidth/this.pixelSpacingX);
-            this.numGridlinesLng = Math.floor(pixelDrawHeight/this.pixelSpacingY);
+            this.numGridlinesLng = Math.floor(pixelDrawWidth/this.pixelSpacingX);
+            this.numGridlinesLat = Math.floor(pixelDrawHeight/this.pixelSpacingY);
         }
         
         this.gridStyle = {}
