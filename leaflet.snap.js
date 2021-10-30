@@ -1073,7 +1073,7 @@ L.Snap.Gridlines =  L.Class.extend({
         this.gridGuideEast = this.maxBounds.getEast();
         this.gridGuideNorth = this.maxBounds.getNorth();
         this.gridGuideSouth = this.maxBounds.getSouth();
-        var zoom = map.getZoom();
+        var zoom = map.getMaxZoom();
         
         ///////////////////////////
         // offset
