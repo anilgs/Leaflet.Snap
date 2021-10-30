@@ -1297,4 +1297,3 @@ L.Snap.Gridlines =  L.Class.extend({
     },
 });
 
-})();
