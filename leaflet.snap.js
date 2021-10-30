@@ -1159,16 +1159,16 @@ L.Snap.Gridlines =  L.Class.extend({
             this.clearGrid();
         }
         
-        for (var i=0; i<this.numGridlinesLat; i++) {
-            var ll = map.layerPointToLatLng(L.point(0, -i*this.pixelSpacingX + this.pixelOffsetX));
+        for (var i=0; i<this.numGridlinesLng; i++) {
+            var ll = map.layerPointToLatLng(L.point(i*this.pixelSpacingX + this.pixelOffsetX, 0));
             
             var gridlineNS = new L.Polyline([[this.gridGuideNorth, ll.lng], [this.gridGuideSouth, ll.lng]], this.gridStyle);
             gridlineNS._gridlineGroup = 'NS';
             this.gridlinesNS.addLayer(gridlineNS);
         }
         
-        for (var i=0; i<this.numGridlinesLng; i++) {
-            var ll = map.layerPointToLatLng(L.point(-i*this.pixelSpacingY + this.pixelOffsetY, 0));
+        for (var i=0; i<this.numGridlinesLat; i++) {
+            var ll = map.layerPointToLatLng(L.point(0, -i*this.pixelSpacingY + this.pixelOffsetY));
             
             var gridlineWE = new L.Polyline([[ll.lat, this.gridGuideWest], [ll.lat, this.gridGuideEast]], this.gridStyle);
             gridlineWE._gridlineGroup = 'WE';
