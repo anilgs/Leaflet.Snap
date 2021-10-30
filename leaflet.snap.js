@@ -1168,7 +1168,7 @@ L.Snap.Gridlines =  L.Class.extend({
         }
         
         for (var i=0; i<this.numGridlinesLat; i++) {
-            var ll = map.layerPointToLatLng(L.point(0, -i*this.pixelSpacingY + this.pixelOffsetY));
+            var ll = map.layerPointToLatLng(L.point(0, i*this.pixelSpacingY + this.pixelOffsetY));
             
             var gridlineWE = new L.Polyline([[ll.lat, this.gridGuideWest], [ll.lat, this.gridGuideEast]], this.gridStyle);
             gridlineWE._gridlineGroup = 'WE';
