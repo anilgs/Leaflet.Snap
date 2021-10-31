@@ -6,19 +6,19 @@ L.Snap.isDifferentLayer = function (marker, layer) {
     var i;
     var n;
     var markerId = L.stamp(marker);
-    
+
     if (layer.hasOwnProperty('_snapIgnore')) {
         return false;
     }
-    
+
     if (layer.hasOwnProperty('_topOwner') && marker.hasOwnProperty('_topOwner')) {
         return layer._topOwner !== marker._topOwner;
     }
-    
+
     if (layer instanceof L.Marker) {
         return markerId !== L.stamp(layer);
     }
-    
+
     if (layer.editing && layer.editing._enabled) {
         if (layer.editing._verticesHandlers) {
             var points = layer.editing._verticesHandlers[0]._markerGroup.getLayers();
@@ -28,7 +28,7 @@ L.Snap.isDifferentLayer = function (marker, layer) {
                 }
             }
         }
-        
+
         else if (layer.editing._resizeMarkers) {
             for(i = 0; i < layer.editing._resizeMarkers.length; i++) {
                 var resizeMarker = layer.editing._resizeMarkers[i];
@@ -36,11 +36,11 @@ L.Snap.isDifferentLayer = function (marker, layer) {
                     return false;
                 }
             }
-            
+
             if (layer.editing._moveMarker) {
                 return markerId !== L.stamp(layer.editing._moveMarker);
             }
-            
+
             return true;
         }
     }
@@ -57,7 +57,7 @@ L.Snap.processGuide = function (latlng, marker, guide, snaplist, buffer) {
             }
         }
     }
-    
+
     // Search snaplist around mouse
     else if (typeof guide.searchBuffer === 'function') {
         var nearlayers = guide.searchBuffer(latlng, buffer);
@@ -65,7 +65,7 @@ L.Snap.processGuide = function (latlng, marker, guide, snaplist, buffer) {
             return L.Snap.isDifferentLayer(layer);
         }));
     }
-    
+
     // Make sure the marker doesn't snap to itself or an associated polyline layer
     else if (L.Snap.isDifferentLayer(marker, guide)) {
         snaplist.push(guide);
@@ -74,7 +74,7 @@ L.Snap.processGuide = function (latlng, marker, guide, snaplist, buffer) {
 
 L.Snap.findClosestLayerSnap = function (map, layers, latlng, tolerance, withVertices) {
     var closest = L.GeometryUtil.nClosestLayers(map, layers, latlng, 6);
-    
+
     // code to correct prefer snap to shapes (and their vertices, if withVertices is true) to gridlines and guidelines, and then guidelines to gridlines
     var withinTolerance = [];
     var pointsWithinTolerance = [];
@@ -84,7 +84,7 @@ L.Snap.findClosestLayerSnap = function (map, layers, latlng, tolerance, withVert
         var layerInfo = closest[c];
         if (layerInfo.distance < tolerance) {
             withinTolerance.push(layerInfo);
-            
+
             if (layerInfo.layer.hasOwnProperty('_latlng')) {
                 pointsWithinTolerance.push(layerInfo);
             }
@@ -96,31 +96,31 @@ L.Snap.findClosestLayerSnap = function (map, layers, latlng, tolerance, withVert
             }
         }
     }
-    
+
     if (withinTolerance.length === 0) {
         return null;
     }
-    
+
     var intInfo;
     var returnLayer = withinTolerance[0].layer;
     var returnLatLng = withinTolerance[0].latlng;
-    
+
     if (pointsWithinTolerance.length > 0) {
         var pointInfo = pointsWithinTolerance[0];
         returnLayer = pointInfo.layer;
         returnLatLng = pointInfo.latlng;
     }
-    
+
     else if (shapesWithinTolerance.length > 0) {
         var shapeInfo = shapesWithinTolerance[0];
         returnLayer = shapeInfo.layer;
         returnLatLng = shapeInfo.latlng;
-        
+
         // this is code from L.GeometryUtil.closestSnap that will find
         // the closest vertex of this layer to the point
         if (withVertices && (typeof shapeInfo.layer.getLatLngs == 'function')) {
             var vertexLatLng = L.GeometryUtil.closest(map, shapeInfo.layer, shapeInfo.latlng, true);
-            
+
             if (vertexLatLng) {
                 var d = L.GeometryUtil.distance(map, latlng, vertexLatLng);
                 if (d < tolerance) {
@@ -129,11 +129,11 @@ L.Snap.findClosestLayerSnap = function (map, layers, latlng, tolerance, withVert
             }
         }
     }
-    
+
     else if (guidesWithinTolerance.length > 0) {
         var guideInfo = guidesWithinTolerance[0];
         var guideType = guideInfo.layer._guidelineGroup;
-        
+
         for (var i=0; i<withinTolerance.length; i++) {
             if (withinTolerance[i].layer._gridlineGroup != guideType) {
                 intInfo = L.Snap.findGuideIntersection('guide', map, latlng, [guideInfo, withinTolerance[i]]);
@@ -144,7 +144,7 @@ L.Snap.findClosestLayerSnap = function (map, layers, latlng, tolerance, withVert
             }
         }
     }
-    
+
     else {
         if (withinTolerance.length == 2) {
             intInfo = L.Snap.findGuideIntersection('grid', map, latlng, withinTolerance);
@@ -153,7 +153,7 @@ L.Snap.findClosestLayerSnap = function (map, layers, latlng, tolerance, withVert
             }
         }
     }
-    
+
     return {
         'layer' : returnLayer,
         'latlng': returnLatLng
@@ -173,10 +173,10 @@ L.Snap.defaultShape = function (latlngs) {
 L.Snap.findGuideIntersection = function (gType, map, latlng, guides) {
     var nsi = (guides[0].layer['_' + gType + 'lineGroup'] == 'NS') ? 1 : 0;
     var wei = (guides[0].layer['_' + gType + 'lineGroup'] == 'NS') ? 0 : 1;
-    
+
     var ns = L.Snap.defaultShape(guides[nsi].layer._latlngs)[0];
     var we = L.Snap.defaultShape(guides[wei].layer._latlngs)[0];
-    
+
     var intersection = new L.LatLng(ns.lat, we.lng);
     var distance = L.GeometryUtil.distance(map, intersection, latlng);
     return {
@@ -209,7 +209,7 @@ L.Snap.updateSnap = function (marker, layer, latlng) {
             }
             marker.fire('unsnap', {layer: marker.snap});
         }
-        
+
         delete marker.snap;
     }
 };
@@ -217,36 +217,36 @@ L.Snap.updateSnap = function (marker, layer, latlng) {
 L.Snap.snapMarker = function (e, guides, map, options, buffer) {
     var marker = e.target;
     var latlng = e.target._latlng || e.latlng;
-    
+
     if (! latlng) {
         return;
     }
-    
+
     var snaplist = [];
     for (var i=0, n = guides.length; i < n; i++) {
         var guide = guides[i];
-        
+
         // don't snap to vertices of a poly object for poly move
         if (marker.hasOwnProperty('_owner') && (guide._leaflet_id == marker._owner)) {
             continue;
         }
-        
+
         L.Snap.processGuide(latlng, marker, guide, snaplist, buffer);
     }
-    
+
     if (snaplist.length === 0) {
         return;
     }
-    
+
     var closest = L.Snap.findClosestLayerSnap(map, snaplist, latlng, options.snapDistance, options.snapVertices);
 
     closest = closest || {layer: null, latlng: null};
     L.Snap.updateSnap(marker, closest.layer, closest.latlng);
-    
+
     if (e.latlng && closest.latlng) {
         e.latlng = closest.latlng;
     }
-    
+
     return closest;
 };
 
@@ -323,7 +323,7 @@ L.Handler.MarkerSnap = L.Handler.extend({
 
     _snapMarker: function(e) {
         var closest = L.Snap.snapMarker(e, this._guides, this._map, this.options, this._buffer);
-        
+
         if (e.originalEvent && e.originalEvent.clientX && closest.layer && closest.latlng) {
             var snapTouchPoint = this._map.project(closest.latlng, this._map.getZoom());
             e.originalEvent.clientX = snapTouchPoint.x;
@@ -343,17 +343,17 @@ L.Handler.PolylineSnap = L.Edit.Poly.extend({
             that.disable();
         });
     },
-    
+
     addGuideLayer: function (layer) {
         this._snapper.addGuideLayer(layer);
     },
-    
+
     _createMoveMarker: function (latlng, icon) {
         var marker = L.Edit.Poly.prototype._createMoveMarker.call(this, latlng, icon);
         this._poly.snapediting._snapper.watchMarker(marker);
         return marker;
     },
-    
+
     _initHandlers: function () {
         this._verticesHandlers = [];
         for (var i = 0; i < this.latlngs.length; i++) {
@@ -386,13 +386,13 @@ L.Handler.RectangleSnap = L.Edit.Rectangle.extend({
         L.Edit.Rectangle.prototype.initialize.call(this, shape, options);
         this._snapper = new L.Handler.MarkerSnap(map, options);
     },
-    
+
     _createMarker: function (latlng, icon) {
         var marker = L.Edit.Rectangle.prototype._createMarker.call(this, latlng, icon);
         this._shape.snapediting._snapper.watchMarker(marker);
         return marker;
     },
-    
+
     addGuideLayer: function (layer) {
         this._snapper.addGuideLayer(layer);
     },
@@ -403,13 +403,13 @@ L.Handler.CircleSnap = L.Edit.Circle.extend({
         L.Edit.Circle.prototype.initialize.call(this, shape, options);
         this._snapper = new L.Handler.MarkerSnap(map, options);
     },
-    
+
     _createMarker: function (latlng, icon) {
         var marker = L.Edit.Circle.prototype._createMarker.call(this, latlng, icon);
         this._shape.snapediting._snapper.watchMarker(marker);
         return marker;
     },
-    
+
     addGuideLayer: function (layer) {
         this._snapper.addGuideLayer(layer);
     },
@@ -486,7 +486,7 @@ L.EditToolbar.SnapEdit = L.EditToolbar.Edit.extend({
                     delete layer.editing;
                 }
                 layer.editing = layer.snapediting = new L.Handler.CircleSnap(layer._map, layer, this.snapOptions);
-            }            
+            }
             else if (layer.getLatLng) {
                 layer.snapediting = new L.Handler.MarkerSnap(layer._map, layer, this.snapOptions);
             }
@@ -554,7 +554,7 @@ L.Draw.Feature.SnapMixin = {
         }else{
             this._map.off('layeradd', this._snap_on_enabled, this);
         }
-        
+
         if (!this._snapper) {
             this._snapper = new L.Handler.MarkerSnap(this._map);
             if (this.options.snapDistance) {
@@ -572,21 +572,21 @@ L.Draw.Feature.SnapMixin = {
         var marker = this._mouseMarker;
 
         this._snapper.watchMarker(marker);
-        
+
         // Show marker when (snap for user feedback)
         var icon = marker.options.icon;
         marker.on('snap', function (e) {
             marker.setIcon(this.options.icon);
             marker.setOpacity(1);
         }, this);
-        
+
         marker.on('unsnap', function (e) {
             marker.setIcon(icon);
             marker.setOpacity(0);
         }, this);
 
         marker.on('click', this._snap_on_click, this);
-        
+
         this._map.on('mousedown', this._snap_on_click, this);
         this._map.on('touchstart', this._snap_on_click, this);
     },
@@ -595,55 +595,55 @@ L.Draw.Feature.SnapMixin = {
         if (this._errorShown) {
             return;
         }
-        
-        // for touch 
+
+        // for touch
         if (this._markers) {
             var markerCount = this._markers.length;
             var marker = this._markers[markerCount - 1];
-            
+
             if (marker && this._mouseMarker.snap) {
                 L.DomUtil.addClass(marker._icon, 'marker-snapped');
             }
         }
-        
+
         // for shapes
         if (this._startLatLng) {
             var closest = this._manuallyCorrectClick(this._startLatLng);
-            
+
             if (closest.latlng) {
                 this._mouseMarker.setLatLng(closest.latlng);
                 this._startLatLng = closest.latlng;
             }
         }
-        
+
         // for poly vertices
         if (this._mouseDownOrigin) {
             var z = this._map.getZoom();
             var mdOrigin = this._map.unproject(this._mouseDownOrigin, z);
             var closestMDO = this._manuallyCorrectClick(mdOrigin);
-            
+
             if (closestMDO.latlng) {
                 this._mouseMarker.setLatLng(closestMDO.latlng);
                 this._mouseDownOrigin = this._map.project(closestMDO.latlng, z);
             }
-    
+
             if (e.originalEvent) {
                 var oeOrigin = this._map.unproject([e.originalEvent.clientX, e.originalEvent.clientY], z);
                 var closestOE = this._manuallyCorrectClick(oeOrigin);
-                
+
                 if (closestOE.latlng) {
                     e.originalEvent = this._map.project(closestOE.latlng, z);
                 }
             }
         }
     },
-    
+
     _manuallyCorrectClick: function (originalLatLng) {
         var ex = {
             'target': this._mouseMarker,
             'latlng': originalLatLng
         };
-        
+
         if (! this._mouseMarker) {
             return {
                 'latlng': null
@@ -654,10 +654,10 @@ L.Draw.Feature.SnapMixin = {
         if (this.hasOwnProperty('_snapper') && this._snapper.hasOwnProperty('_buffer')) {
             buffer = this._snapper._buffer;
         }
-        
+
         return L.Snap.snapMarker(ex, this.options.guideLayers || [], this._map, this.options, buffer);
     },
-    
+
     _snap_on_disabled: function () {
         delete this._snapper;
     },
@@ -712,72 +712,72 @@ L.Snap.Guidelines = L.Class.extend({
             'opacity' : 0.2
         },
     },
-    
+
     initialize : function (map, snapGuideLayers, passedOptions) {
         this._map = map;
         this.snapGuideLayers = snapGuideLayers;
         this.realGuideLayerCount = 0;
         map._currentLDrawMarker = null;
-        
+
         if (! passedOptions.hasOwnProperty('_enabled')) {
             this._enabled = true;
         }
         else {
             this._enabled = passedOptions._enabled;
         }
-        
+
         this.guideStyle = {};
         for (var o in this.defaultOptions.guideStyle) {
-            this.guideStyle[o] = this.defaultOptions.guideStyle[o]; 
+            this.guideStyle[o] = this.defaultOptions.guideStyle[o];
         }
-        
+
         if (passedOptions.hasOwnProperty('guideStyle')) {
             for (var o in passedOptions.guideStyle) {
                 var v = passedOptions.guideStyle[o];
                 this.guideStyle[o] = v;
             }
         }
-        
+
         // if grid is enabled, then we need to account for the NS and WE grid layergroups
         // late night TODO: move to call just before use
-        
+
         // !!!!!!!!!!!!!!!!!!!!!!!!
         // L.Snap.Gridlines does not make any assumptions about where the Gridlines are in the guideLayer list, but L.Snap.Guidelines does - is this a problem?!?
         // take a look at grid and guide disable/removal!!!
-        
-        
+
+
         if (! map.options.maxBounds) {
             return;
         }
-        
+
         if (this._enabled) {
             this._enable();
         }
     },
-    
+
     enabled: function () {
         return this._enabled;
     },
-    
+
     enable: function () {
         if (this._enabled) {
             return;
         }
-        
+
         this._enable();
     },
-        
+
     _enable: function () {
         this._enabled = true;
         this.addHooks();
         this._map.fire('guidelines:enabled', {});
     },
-    
+
     disable: function () {
         if (!this._enabled) {
             return;
         }
-        
+
         this._enabled = false;
         this.removeHooks();
         this._map.fire('guidelines:disabled', {});
@@ -785,11 +785,11 @@ L.Snap.Guidelines = L.Class.extend({
 
     addHooks : function (e) {
         var map = this._map;
-        
+
         if (map) {
             // add guidelayers for each existing shape when we start drawing
             map.on('draw:drawstart', this.drawGuideLayers, this);
-            
+
             // remove guides when drawing or editing has been completed or canceled
             map.on('draw:drawstop', this.clearGuides, this);
             map.on('draw:canceled', this.clearGuides, this);
@@ -802,32 +802,32 @@ L.Snap.Guidelines = L.Class.extend({
             map.on('draw:deleted', this.deleteGuideLayers, this);
         }
     },
-    
+
     removeHooks: function (e) {
         var map = this._map;
         var guideLayers = this.snapGuideLayers;
-        
+
         if (map) {
             var toRemove = {};
-            
+
             var startingCount = 2*map._numGridEnabled;
             for (var i=startingCount; i<this.realGuideLayerCount+startingCount; i++) {
                 if (guideLayers[i].hasOwnProperty('_guidelineGroup')) {
                     toRemove[i] = true;
                 }
             }
-            
+
             for (var i in toRemove) {
                 guideLayers.splice(i, 1);
             }
         }
     },
-    
+
     drawGuideLayers : function(e) {
         if (!this._enabled) {
             return;
         }
-    
+
         var map = this._map;
         var guideLayers = this.snapGuideLayers;
 
@@ -838,7 +838,7 @@ L.Snap.Guidelines = L.Class.extend({
                 guideLayers[guideLayers.length-d]._guidelineGroup = (d%2) ? 'WE' : 'NS';
             }
         };
-        
+
         // we only draw guides for when the user wants to draw a rectangle or circle; it wouldn't make sense for polygons
         var layerType = e.layerType;
         if ((layerType == 'rectangle') || (layerType == 'circle')) {
@@ -846,11 +846,11 @@ L.Snap.Guidelines = L.Class.extend({
             var guideEast = map.options.maxBounds.getEast();
             var guideNorth = map.options.maxBounds.getNorth();
             var guideSouth = map.options.maxBounds.getSouth();
-            
+
             var startingCount = 2*map._numGridEnabled;
             for (var i=startingCount; i<this.realGuideLayerCount+startingCount; i++) {
                 var shape = guideLayers[i];
-                
+
                 // in addition, we only draw guidelines for rectangles and circles
                 if ((shape instanceof L.Rectangle) || (shape instanceof L.Circle)) {
                     var b = shape.getBounds();
@@ -861,7 +861,7 @@ L.Snap.Guidelines = L.Class.extend({
                         new L.Polyline([[guideNorth, b.getEast()], [guideSouth, b.getEast()]], this.guideStyle)
                     );
                     processGuideLayers(4);
-                    
+
                     if (shape instanceof L.Circle) {
                         var c = b.getCenter();
                         guideLayers.push(
@@ -869,52 +869,52 @@ L.Snap.Guidelines = L.Class.extend({
                             new L.Polyline([[guideNorth, c.lng], [guideSouth, c.lng]], this.guideStyle)
                         );
                         processGuideLayers(2);
-                        
+
                     }
                 }
             }
         }
-    }, 
-    
+    },
+
     addGuideLayer : function(e) {
         var layer = e.layer;
-        
+
         // can't use push here, because draw:drawstop is actually fired after draw:created
         var startingCount = 2*map._numGridEnabled;
         this.snapGuideLayers.splice(this.realGuideLayerCount+startingCount, 0, layer);
         this.realGuideLayerCount ++;
     },
-    
+
     clearGuides : function(e) {
         if (!this._enabled) {
             return;
         }
-        
+
         var layerType = e.layerType;
-        
+
         if ((layerType == 'rectangle') || (layerType == 'circle')) {
             var startingCount = 2*map._numGridEnabled;
             var toDelete = this.snapGuideLayers.length - this.realGuideLayerCount - startingCount;
-            
+
             for (var i=0; i<toDelete; i++) {
                 this.snapGuideLayers[this.realGuideLayerCount+startingCount+i].removeFrom(map);
             }
             this.snapGuideLayers.splice(startingCount+this.realGuideLayerCount, toDelete);
         }
     },
-    
+
     deleteGuideLayers : function (e) {
         if (!this._enabled) {
             return;
         }
-        
+
         var layers = e.layers;
-        
+
         var layerIndex = {};
         layers.eachLayer(function(layer) {
             layerIndex[layer._leaflet_id] = 1;
         });
-        
+
         var layersToRemove = [];
         var startingCount = 2*map._numGridEnabled;
         for (var i=startingCount; i<this.snapGuideLayers.length; i++) {
@@ -922,7 +922,7 @@ L.Snap.Guidelines = L.Class.extend({
                 layersToRemove.unshift(i);
             }
         }
-        
+
         for (j in layersToRemove) {
             var index = layersToRemove[j];
             this.snapGuideLayers.splice(index, 1);
@@ -940,21 +940,21 @@ L.Snap.Gridlines =  L.Class.extend({
         //
         // for spacing and offset, we can define them in terms of pixels (at maxZoom), or lat/lng
         // LatOffset/LngOffset = 0 is the default.
-    
+
         'numGridlines' : null,
-        'numGridlinesLat' : 10, 
+        'numGridlinesLat' : 10,
         'numGridlinesLng' : 10,
-        
+
         'gridSpacingLat' : null,
         'gridSpacingLng' : null,
         'pixelSpacingX' : null,
         'pixelSpacingY' : null,
-        
+
         'LatOffset' : 0,
         'LngOffset' : 0,
         'pixelOffsetX' : 0,
         'pixelOffsetY' : 0,
-        
+
         'gridStyle' : {
             'weight' : 1,
             'color' : 'black',
@@ -970,58 +970,58 @@ L.Snap.Gridlines =  L.Class.extend({
         this._map = map;
         this._topLayer = layer;
         this.snapGuideLayers = snapGuideLayers;
-        
+
         this.isDrawn = false;
         this._enabled = false;
         this._shown = true;
         this._snapAdded = false;
         this.passedOptions = options || this.defaultOptions;
-        
+
         L.stamp(this);
-        
+
         if (!this.passedOptions.hasOwnProperty('_enabled')) {
             this._enabled = true;
         }
         else {
             this._enabled = this.passedOptions._enabled;
         }
-        
+
         if (!this.passedOptions.hasOwnProperty('_snapEnabled')) {
             this._snapEnabled = true;
         }
         else {
             this._snapEnabled = this.passedOptions._snapEnabled;
         }
-        
+
         if (this._enabled) {
             this._enable();
         }
-    }, 
-    
+    },
+
     enabled: function () {
         return this._enabled;
     },
-    
+
     enable: function () {
         if (this._enabled) {
             return;
         }
-        
+
         this._enable();
     },
-    
+
     _enable: function () {
         this.addHooks();
-        
+
         if (this.passedOptions.hasOwnProperty('_shown') && (!this.passedOptions._shown)) {
             this.hide();
         }
-        
+
         this._enabled = true;
         this.calcDimensions(this.passedOptions);
         this.drawGrid();
     },
-    
+
     disable: function () {
         if (!this._enabled) {
             return;
@@ -1031,10 +1031,10 @@ L.Snap.Gridlines =  L.Class.extend({
         this.disableSnap();
         this.removeGrid();
         this._enabled = false;
-        
+
         L.Handler.prototype.disable.call(this);
     },
-    
+
     addHooks: function () {
         if (this._map) {
             var map = this._map;
@@ -1045,20 +1045,20 @@ L.Snap.Gridlines =  L.Class.extend({
             this.gridlinesWE._gridlineGroup = 'WE';
             this.gridlinesWE._gridlineOwner = this._leaflet_id;
             this._map._numGridEnabled ++;
-            
+
             if (this._snapEnabled) {
                 this.enableSnap();
             }
         }
     },
-    
+
     removeGrid: function() {
         var lg = this._topLayer != null ? this._topLayer : this._map;
         lg.removeLayer(this.gridlinesNS);
         lg.removeLayer(this.gridlinesWE);
         lg._numGridEnabled --;
     },
-    
+
     enableSnap: function () {
         this._snapEnabled = true;
         if (this._snapAdded == false) {
@@ -1066,7 +1066,7 @@ L.Snap.Gridlines =  L.Class.extend({
             this._snapAdded = true;
         }
     },
-    
+
     disableSnap: function () {
         if (this._map) {
             // figure out where our gridlines are in the snap list, and then remove them
@@ -1079,7 +1079,7 @@ L.Snap.Gridlines =  L.Class.extend({
                     toRemove.push(i);
                 }
             }
-            
+
             // remove in reverse order, so that the indices will be correct
             toRemove.sort();
             this.snapGuideLayers.splice(toRemove[1], 1);
@@ -1088,11 +1088,11 @@ L.Snap.Gridlines =  L.Class.extend({
             this._snapEnabled = false;
         }
     },
-    
+
     calcDimensions: function(options) {
         var map = this._map;
         var defaultOptions = this.defaultOptions;
-        
+
         // lmfao, this is completely absurd but I'm so tired of hunting down bugs that turn
         // out to be because i passed in 'numGridLines' instead of 'numGridlines' !!!
         // reminder to take it out later...
@@ -1102,60 +1102,60 @@ L.Snap.Gridlines =  L.Class.extend({
                 options[newKey] = options[key];
             }
         }
-        
+
         // option checking
         //     1. we can either specify number of gridlines, or spacing, but not both
         //     2. if we specify spacing, we can do it in lat/lng or in pixel x/y, but not both
         //     3. we must have a maxBounds set, either on the map or in the options
-        
+
         var usesNum = (options.hasOwnProperty('numGridlines') && (options.numGridlines != null))
                    || (options.hasOwnProperty('numGridlinesLat') && (options.numGridlinesLat != null))
                    || (options.hasOwnProperty('numGridlinesLng') && (options.numGridlinesLat != null));
-        var usesLatLngSpacing = (options.hasOwnProperty('gridSpacingLat') && (options.gridSpacingLat != null)) 
+        var usesLatLngSpacing = (options.hasOwnProperty('gridSpacingLat') && (options.gridSpacingLat != null))
                              || (options.hasOwnProperty('gridSpacingLng') && (options.gridSpacingLng != null));
-        var usesPixelSpacing = (options.hasOwnProperty('pixelSpacingX') && (options.pixelSpacingX != null)) 
-                             || (options.hasOwnProperty('pixelSpacingY') && (options.pixelSpacingY != null)) 
+        var usesPixelSpacing = (options.hasOwnProperty('pixelSpacingX') && (options.pixelSpacingX != null))
+                             || (options.hasOwnProperty('pixelSpacingY') && (options.pixelSpacingY != null))
         var usesSpacing = usesLatLngSpacing || usesPixelSpacing;
-        
+
         if (usesNum && usesSpacing) {
             this._enabled = false;
             throw 'ERROR calculating grid dimensions: cannot specify grid dimensions in terms of both number of gridlines in a dimensions as well as spacing between gridlines - use one or the other.';
         }
-        
+
         if (usesLatLngSpacing && usesPixelSpacing) {
             this._enabled = false;
             throw 'ERROR calculating grid dimensions: cannot specify grid spacing in terms of both lat/lng and pixel - use one or the other. Returning without drawing.';
         }
-        
+
         if (!(usesNum || usesSpacing)) {
             usesNum = true;
             options.numGridlinesLat = defaultOptions.numGridlinesLat;
             options.numGridlinesLng = defaultOptions.numGridlinesLng;
         }
-        
+
         if (options.hasOwnProperty('maxBounds')) {
             this.maxBounds = options.maxBounds;
         }
         else {
             this.maxBounds = map.options.maxBounds;
         }
-        
+
         if (! this.maxBounds) {
             this._enabled = false;
             throw 'ERROR calculating grid dimensions: cannot specify grid spacing without a max bounds - set one on the map, or pass an L.LatLngBounds object for maxBounds in the options.';
         }
-        
+
         // edges of the grid. we always go to maxBounds even if there's an offset; the offset just determines the spacing from the left/top edges
-    
+
         this.gridGuideWest = this.maxBounds.getWest();
         this.gridGuideEast = this.maxBounds.getEast();
         this.gridGuideNorth = this.maxBounds.getNorth();
         this.gridGuideSouth = this.maxBounds.getSouth();
         var zoom = map.getMaxZoom();
-        
+
         ///////////////////////////
         // offset
-        
+
         var latOffset = options.latOffset || 0;
         var lngOffset = options.lngOffset || 0;
         var pixelOffsetX = options.pixelOffsetX || 0;
@@ -1166,21 +1166,21 @@ L.Snap.Gridlines =  L.Class.extend({
             this.pixelOffsetX = projectedOffset.x + pixelOffsetX;
             this.pixelOffsetY = projectedOffset.y + pixelOffsetY;
         }
-        
-        
 
-        
+
+
+
         //var nwCorner = pixelBounds.getTopLeft();
         //var seCorner = pixelBounds.getBottomRight();
         //var nwCorner = map.project([this.gridGuideWest, this.gridGuideNorth], zoom);
         //var seCorner = map.project([this.gridGuideEast, this.gridGuideSouth], zoom);
-        
+
         //var pixelDrawWidth = nwCorner.x - seCorner.x;
         //var pixelDrawHeight = nwCorner.y - seCorner.y;
         var pixelBounds = map.getPixelBounds();
         var pixelDrawWidth = pixelBounds.getSize().x;
         var pixelDrawHeight = pixelBounds.getSize().y;
-        
+
         if (usesNum) {
             if (options.numGridlines) {
                 this.numGridlinesLat = options.numGridlines;
@@ -1190,15 +1190,15 @@ L.Snap.Gridlines =  L.Class.extend({
                 this.numGridlinesLat = options.numGridlinesLat;
                 this.numGridlinesLng = options.numGridlinesLng;
             }
-            
+
             this.pixelSpacingX = Math.floor(pixelDrawWidth/this.numGridlinesLng);
             this.pixelSpacingY = Math.floor(pixelDrawHeight/this.numGridlinesLat);
         }
-        
+
         else if (usesSpacing) {
             if (usesLatLngSpacing) {
                 var projectedSpacing = map.latLngToLayerPoint(L.latLng(options.gridSpacingLat, options.gridSpacingLng));
-                
+
                 this.pixelSpacingX = Math.abs(projectedSpacing.x);
                 this.pixelSpacingY = Math.abs(projectedSpacing.y);
             }
@@ -1206,68 +1206,72 @@ L.Snap.Gridlines =  L.Class.extend({
                 this.pixelSpacingX = options.pixelSpacingX;
                 this.pixelSpacingY = options.pixelSpacingY;
             }
-            
+
             this.numGridlinesLng = Math.floor(pixelDrawWidth/this.pixelSpacingX)+1;
             this.numGridlinesLat = Math.floor(pixelDrawHeight/this.pixelSpacingY)+1;
         }
-        
+
         this.gridStyle = {}
         for (var o in defaultOptions.gridStyle) {
-            this.gridStyle[o] = defaultOptions.gridStyle[o]; 
+            this.gridStyle[o] = defaultOptions.gridStyle[o];
         }
-        
+
         if (options.hasOwnProperty('gridStyle')) {
             for (var o in options.gridStyle) {
                 var v = options.gridStyle[o];
                 this.gridStyle[o] = v;
             }
         }
-        
+
         this.dimensionsSet = true;
     },
-    
+
     drawGrid: function() {
         var map = this._map;
-        
+
         if (! map.options.maxBounds) {
             return;
         }
-        
+
         if (this.isDrawn) {
             this.clearGrid();
         }
-        
+
         for (var i=0; i<this.numGridlinesLng; i++) {
             var ll = map.layerPointToLatLng(L.point(i*this.pixelSpacingX + this.pixelOffsetX, 0));
-            
+
             var gridlineNS = new L.Polyline([[this.gridGuideNorth, ll.lng], [this.gridGuideSouth, ll.lng]], this.gridStyle);
             gridlineNS._gridlineGroup = 'NS';
+            gridlineNS.snapediting = new L.Handler.PolylineSnap(map, gridlineNS);
+            gridlineNS.snapediting.enable();
             this.gridlinesNS.addLayer(gridlineNS);
         }
-        
+
         for (var i=0; i<this.numGridlinesLat; i++) {
             var ll = map.layerPointToLatLng(L.point(0, i*this.pixelSpacingY + this.pixelOffsetY));
-            
+
             var gridlineWE = new L.Polyline([[ll.lat, this.gridGuideWest], [ll.lat, this.gridGuideEast]], this.gridStyle);
             gridlineWE._gridlineGroup = 'WE';
+            gridlineWE.snapediting = new L.Handler.PolylineSnap(map, gridlineWE);
+            gridlineWE.snapediting.enable();
             this.gridlinesWE.addLayer(gridlineWE);
         }
-        
+
         this.isDrawn = true;
     },
-    
+
     adjustGrid : function(options) {
         this.passedOptions = options || {};
         this.calcDimensions(this.passedOptions);
         this.drawGrid();
     },
-    
+
     clearGrid : function() {
         this.gridlinesNS.clearLayers();
         this.gridlinesWE.clearLayers();
         this.isDrawn = false;
     },
-    
+
     show : function () {
         //If top layer group is provided use that, else use the map
         var lg = this._topLayer != null ? this._topLayer : this._map;
@@ -1280,18 +1284,18 @@ L.Snap.Gridlines =  L.Class.extend({
         }
         this._shown = true;
     },
-    
+
     hide : function () {
         if (!this._shown) {
             return;
         }
-        
+
         // we call this.disableSnap for convenience here, but calling hide shouldn't
         // keep snap disabled if show is called afterwards if it wasn't disabled originally
         var sn = this._snapEnabled;
         this.disableSnap();
         this._snapEnabled = sn;
-        
+
         this.removeGrid();
         this._shown = false;
     },
