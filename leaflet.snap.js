@@ -1242,8 +1242,6 @@ L.Snap.Gridlines =  L.Class.extend({
 
             var gridlineNS = new L.Polyline([[this.gridGuideNorth, ll.lng], [this.gridGuideSouth, ll.lng]], this.gridStyle);
             gridlineNS._gridlineGroup = 'NS';
-            gridlineNS.snapediting = new L.Handler.PolylineSnap(map, gridlineNS);
-            gridlineNS.snapediting.enable();
             this.gridlinesNS.addLayer(gridlineNS);
         }
 
@@ -1252,8 +1250,6 @@ L.Snap.Gridlines =  L.Class.extend({
 
             var gridlineWE = new L.Polyline([[ll.lat, this.gridGuideWest], [ll.lat, this.gridGuideEast]], this.gridStyle);
             gridlineWE._gridlineGroup = 'WE';
-            gridlineWE.snapediting = new L.Handler.PolylineSnap(map, gridlineWE);
-            gridlineWE.snapediting.enable();
             this.gridlinesWE.addLayer(gridlineWE);
         }
 
