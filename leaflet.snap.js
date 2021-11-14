@@ -834,7 +834,7 @@ L.Snap.Guidelines = L.Class.extend({
         var processGuideLayers = function (N) {
             for (var d=1; d<=N; d++) {
                 map._currentLDrawMarker._snapper.addGuideLayer(guideLayers[guideLayers.length-d]);
-                guideLayers[guideLayers.length-d].addTo(map);
+                guideLayers[guideLayers.length-d].addTo(this._topLayer ? this._topLayer : map);
                 guideLayers[guideLayers.length-d]._guidelineGroup = (d%2) ? 'WE' : 'NS';
             }
         };
@@ -966,8 +966,9 @@ L.Snap.Gridlines =  L.Class.extend({
         'delayDimensionCalculation' : false
     },
 
-    initialize: function(map, snapGuideLayers, options) {
+    initialize: function(map, layer, snapGuideLayers, options) {
         this._map = map;
+        this._topLayer = layer;
         this.snapGuideLayers = snapGuideLayers;
 
         this.isDrawn = false;
@@ -1037,10 +1038,10 @@ L.Snap.Gridlines =  L.Class.extend({
     addHooks: function () {
         if (this._map) {
             var map = this._map;
-            this.gridlinesNS = L.layerGroup().addTo(map);
+            this.gridlinesNS = L.layerGroup().addTo(this._topLayer ? this._topLayer : map);
             this.gridlinesNS._gridlineGroup = 'NS';
             this.gridlinesNS._gridlineOwner = this._leaflet_id;
-            this.gridlinesWE = L.layerGroup().addTo(map);
+            this.gridlinesWE = L.layerGroup().addTo(this._topLayer ? this._topLayer : map);
             this.gridlinesWE._gridlineGroup = 'WE';
             this.gridlinesWE._gridlineOwner = this._leaflet_id;
             this._map._numGridEnabled ++;
@@ -1052,7 +1053,7 @@ L.Snap.Gridlines =  L.Class.extend({
     },
 
     removeGrid: function() {
-        var lg = this._map;
+        var lg = this._topLayer != null ? this._topLayer : this._map;
         lg.removeLayer(this.gridlinesNS);
         lg.removeLayer(this.gridlinesWE);
         lg._numGridEnabled --;
@@ -1269,7 +1270,7 @@ L.Snap.Gridlines =  L.Class.extend({
 
     show : function () {
         //If top layer group is provided use that, else use the map
-        var lg = this._map;
+        var lg = this._topLayer != null ? this._topLayer : this._map;
         if(!lg.hasLayer(this.gridlinesNS) || !lg.hasLayer(this.gridlinesWE)) {
             lg.addLayer(this.gridlinesNS);
             lg.addLayer(this.gridlinesWE);
