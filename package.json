@@ -11,7 +11,7 @@
         "url": "https://github.com/makinacorpus/Leaflet.Snap/issues"
     },
     "scripts": {
-      "test": "mocha-phantomjs ./test/index.html --reporter list || true"
+        "test": "mocha-phantomjs ./test/index.html --reporter list || true"
     },
     "repository": {
         "type": "git",
