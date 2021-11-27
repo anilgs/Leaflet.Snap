@@ -1229,9 +1229,9 @@ L.Snap.Gridlines =  L.Class.extend({
     drawGrid: function() {
         var map = this._map;
 
-        if (! map.options.maxBounds) {
-            return;
-        }
+        // if (! map.options.maxBounds) {
+        //     return;
+        // }
 
         if (this.isDrawn) {
             this.clearGrid();
