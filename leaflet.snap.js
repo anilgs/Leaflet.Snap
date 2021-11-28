@@ -1237,6 +1237,10 @@ L.Snap.Gridlines =  L.Class.extend({
             this.clearGrid();
         }
 
+        //To support pan operations, we need to append offset from pixel origin.
+        var northWest = map.latLngToLayerPoint(map.getBounds().getNorthWest());
+        this.pixelOffsetX += northWest.x;
+        this.pixelOffsetY += northWest.y;
         for (var i=0; i<this.numGridlinesLng; i++) {
             var ll = map.layerPointToLatLng(L.point(i*this.pixelSpacingX + this.pixelOffsetX, 0));
 
